@@ -4,8 +4,10 @@ import 'package:level_map_example/LevelMapSDK/src/model/bg_image.dart';
 import 'package:level_map_example/LevelMapSDK/src/model/image_details.dart';
 import 'package:level_map_example/LevelMapSDK/src/model/images_to_paint.dart';
 import 'package:level_map_example/LevelMapSDK/src/model/level_map_params.dart';
+import 'package:level_map_example/LevelMapSDK/src/model/student_model.dart';
 import 'package:level_map_example/LevelMapSDK/src/utils/image_offset_extension.dart';
 import 'package:level_map_example/main.dart';
+import 'dart:math' as math;
 
 class LevelMapPainter extends CustomPainter {
   final LevelMapParams params;
@@ -110,11 +112,20 @@ class LevelMapPainter extends CustomPainter {
     if (imagesToPaint != null) {
       final Offset _offsetToPaintImage = Offset(_compute(0.5, p1.dx, p2.dx, p3.dx), _compute(0.5, p1.dy, p2.dy, p3.dy));
       ImageDetails imageDetails;
+
       // if (params.currentLevel >= thisLevel) {
       //   imageDetails = imagesToPaint!.completedLevelImage;
       // } else {}
       imageDetails = imagesToPaint!.lockedLevelImage;
       _paintLevelNo(canvas, imageDetails, _offsetToPaintImage.toBottomCenter(imageDetails.size), thisLevel);
+
+      for (var element in params.studentLevelList) {
+        if (element.currentLevel == thisLevel) {
+          _paintStudentCurrentLevel(
+              canvas, imagesToPaint!.currentLevelImage, _offsetToPaintImage.toCenter(imagesToPaint!.currentLevelImage.size), element);
+        }
+      }
+
       final double _curveFraction;
       final int _flooredCurrentLevel = params.currentLevel.floor();
       if (_flooredCurrentLevel == thisLevel && _nextLevelFraction <= 0.5) {
@@ -125,9 +136,9 @@ class LevelMapPainter extends CustomPainter {
       } else {
         return;
       }
-      final Offset _offsetToPaintCurrentLevelImage =
-          Offset(_compute(_curveFraction, p1.dx, p2.dx, p3.dx), _compute(_curveFraction, p1.dy, p2.dy, p3.dy));
-      _paintImage(canvas, imagesToPaint!.currentLevelImage, _offsetToPaintCurrentLevelImage.toBottomCenter(imageDetails.size));
+      // final Offset _offsetToPaintCurrentLevelImage =
+      //     Offset(_compute(_curveFraction, p1.dx, p2.dx, p3.dx), _compute(_curveFraction, p1.dy, p2.dy, p3.dy));
+      // _paintImage(canvas, imagesToPaint!.currentLevelImage, _offsetToPaintCurrentLevelImage.toBottomCenter(imageDetails.size));
     }
   }
 
@@ -158,6 +169,34 @@ class LevelMapPainter extends CustomPainter {
       image: imageDetails.imageInfo.image,
     );
     textPainter.paint(canvas, Offset((offset.dx + (levelNo < 10 ? 16 : 8)), offset.dy + 14));
+  }
+
+  void _paintStudentCurrentLevel(Canvas canvas, ImageDetails imageDetails, Offset offset, StudentModel student) {
+    final namePainter = TextPainter(
+        text: TextSpan(
+          text: "${student.name}\n${student.currentLevel}th Level",
+          style: GoogleFonts.josefinSans(
+            color: kPrimary,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.start);
+
+    namePainter.layout();
+    Offset _offset = Offset(offset.dx + 40, offset.dy - 75);
+    paintImage(
+      canvas: canvas,
+      rect: Rect.fromLTWH(_offset.dx, _offset.dy, imageDetails.size.width, imageDetails.size.height),
+      image: imageDetails.imageInfo.image,
+    );
+    // Offset centerOffset = Offset(_offset.dx + imageDetails.size.width / 2.0, _offset.dy + imageDetails.size.height / 2.0);
+    namePainter.paint(canvas, Offset(_offset.dx + 20, _offset.dy + 25));
+    // namePainter.paint(canvas, centerOffset);
+
+
+    // namePainter.paint(canvas, Offset((offset.dx + (student.currentLevel < 10 ? 16 : 8)), offset.dy + 14));
   }
 
   double _compute(double t, double p1, double p2, double p3) {

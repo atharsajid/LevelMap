@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:level_map_example/LevelMapSDK/src/level_map.dart';
 import 'package:level_map_example/LevelMapSDK/src/model/image_params.dart';
 import 'package:level_map_example/LevelMapSDK/src/model/level_map_params.dart';
+import 'package:level_map_example/student_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,8 +17,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 const Color kPrimary = Color(0xffDE7FC4);
+
 class LevelMapPage extends StatefulWidget {
   @override
   _LevelMapPageState createState() => _LevelMapPageState();
@@ -29,16 +30,17 @@ class _LevelMapPageState extends State<LevelMapPage> {
     return SafeArea(
       child: Scaffold(
         body: LevelMap(
-          backgroundColor:kPrimary ,
+          backgroundColor: kPrimary,
           levelMapParams: LevelMapParams(
-            levelCount: 100,
-            currentLevel: 2.5,
-            studentLevelList: [],
+            levelCount: 50,
+            currentLevel: 2,
+            studentLevelList: studentList,
             pathColor: Colors.amber,
             showPathShadow: false,
+            maxVariationFactor: 0.1,
             currentLevelImage: ImageParams(
-              path: "assets/images/current_black.png",
-              size: Size(40, 47),
+              path: "assets/images/studentBackground.png",
+              size: Size(150, 75),
             ),
             lockedLevelImage: ImageParams(
               path: "assets/images/LevelBackground2.png",
